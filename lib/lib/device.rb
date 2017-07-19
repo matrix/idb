@@ -253,9 +253,13 @@ module Idb
     end
 
     def open_url(url)
-      command = "#{openurl_path} \"#{url.gsub('&', '\&')}\""
-      $log.info "Executing: #{command}"
-      @ops.execute  command
+      unless url.to_s.empty?
+        command = "#{openurl_path} \"#{url.to_s.gsub('&', '\&')}\""
+        $log.info "Executing: #{command}"
+        @ops.execute  command
+      else
+        $log.error "URL is empty"
+      end
     end
 
     def ca_interface

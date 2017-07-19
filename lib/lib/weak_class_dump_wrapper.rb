@@ -39,12 +39,12 @@ module Idb
       $log.info "Launching app..."
       $selected_app.launch
 
-      cmd = "cycript -p '#{$selected_app.binary_name}' #{wc_file}"
+      cmd = "cycript -p '#{$selected_app.binary_name}' #{@wc_file}"
       $log.info "Injecting: #{cmd}"
       $device.ops.execute cmd
 
       $log.info "Running cycript using weak_classdump."
-      cmd = "cycript -p '#{$selected_app.binary_name}' #{remote_instructions_file}"
+      cmd = "cycript -p '#{$selected_app.binary_name}' #{@remote_instructions_file}"
       $log.info "Running: #{cmd}"
       $device.ops.execute cmd
     end

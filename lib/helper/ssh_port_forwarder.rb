@@ -66,7 +66,9 @@ module Idb
     $log.info "Closing SSH connection"
     $ssh_forwards.stop
     $log.info "Stopping any SSH via USB forwarding"
-    $usbmuxd.stop_all
+    unless $usbmuxd.nil?
+      $usbmuxd.stop_all
+    end
   end
 
 end

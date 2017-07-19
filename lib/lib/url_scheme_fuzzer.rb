@@ -68,14 +68,19 @@ module Idb
     end
 
     def execute(url)
-      $log.info "Fuzzing: #{url}"
-      $device.open_url url
-      sleep 2
+      unless url.to_s.empty?
+        $log.info "Fuzzing: #{url}"
+        $device.open_url url
+        sleep 2
 
-      $log.info "Killing processes names #{$selected_app.binary_name}"
-      $device.kill_by_name $selected_app.binary_name
+        $log.info "Killing processes names #{$selected_app.binary_name}"
+        $device.kill_by_name $selected_app.binary_name
 
-      crashed?
+        crashed?
+      else
+        $log.error "URL is empty, skip fuzzing"
+        false
+      end
     end
 
     def crashed?
