@@ -1,3 +1,3 @@
 module Idb
-        VERSION = "2.9.1"
+        VERSION = "2.10.3"
 end
