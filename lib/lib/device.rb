@@ -69,36 +69,44 @@ module Idb
 
       $log.info "Checking iOS version"
 
-      @ops.execute"touch /tmp/daniel"
+      @productVersion = @ops.execute "sw_vers -productVersion | cut -d. -f1"
+      if @productVersion.is_a?(String) && @productVersion.to_s.strip.empty? == false
+        @ios_version = @productVersion.to_i
+      end
 
-      if @ops.file_exists? @application_state_ios_10
-        $log.info "iOS Version: 10 or newer"
-        @ios_version = 10
-        @apps_dir = @apps_dir_ios_9
-        @data_dir = @data_dir_ios_9
+      if @ios_version.is_a?(Integer)
 
-      elsif @ops.directory? @apps_dir_ios_9
-        $log.info "iOS Version: 9"
-        @ios_version = 9
-        @apps_dir = @apps_dir_ios_9
-        @data_dir = @data_dir_ios_9
+        if ios_version == 10
+          $log.info "iOS Version: 10 or newer"
+          @apps_dir = @apps_dir_ios_9
+          @data_dir = @data_dir_ios_9
 
-      elsif @ops.directory? @apps_dir_ios_8
-        $log.info "iOS Version: 8"
-        @ios_version = 8
-        @apps_dir = @apps_dir_ios_8
-        @data_dir = @data_dir_ios_8
+        elsif ios_version == 9 && @ops.directory?(@apps_dir_ios_9)
+          $log.info "iOS Version: 9"
+          @apps_dir = @apps_dir_ios_9
+          @data_dir = @data_dir_ios_9
 
-      elsif @ops.directory? @apps_dir_ios_pre8
-        $log.info "iOS Version: 7 or earlier"
-        @ios_version = 7 # 7 or earlier
-        @apps_dir = @apps_dir_ios_pre8
-        @data_dir = @apps_dir_ios_pre8
+        elsif ios_version == 8 && @ops.directory?(@apps_dir_ios_8)
+          $log.info "iOS Version: 8"
+          @apps_dir = @apps_dir_ios_8
+          @data_dir = @data_dir_ios_8
+
+        elsif ios_version == 7 || @ops.directory?(@apps_dir_ios_pre8)
+          $log.info "iOS Version: 7 or earlier"
+          @ios_version = 7 # 7 or earlier
+          @apps_dir = @apps_dir_ios_pre8
+          @data_dir = @apps_dir_ios_pre8
+
+        else
+          $log.error "Unsupported iOS Version."
+          raise
+        end
 
       else
         $log.error "Unsupported iOS Version."
         raise
       end
+
       $log.info "iOS Version: #{@ios_version} with apps dir: #{@apps_dir} and data dir: #{@data_dir}"
 
       start_port_forwarding

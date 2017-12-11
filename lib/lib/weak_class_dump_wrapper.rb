@@ -5,6 +5,9 @@ module Idb
       @remote_header_dir = @remote_header_dir_base + $selected_app.uuid
 
       @local_header_dir = local_header_dir
+
+      @wc_file = ''
+      @remote_instructions_file = ''
     end
 
     def setup_cycript
@@ -16,21 +19,21 @@ module Idb
       # ensure cycript script is installed.
       # originally from: https://github.com/limneos/weak_classdump
 
-      wc_file = "/var/root/weak_classdump.cy"
-      unless $device.ops.file_exists? wc_file
+      @wc_file = "/var/root/weak_classdump.cy"
+      unless $device.ops.file_exists? @wc_file
         $log.info "weak_classdump not found, Installing onto device."
         path = File.dirname(File.expand_path(__FILE__))
         path += "/../utils/weak_class_dump/weak_classdump.cy"
-        $device.ops.upload(path, wc_file)
+        $device.ops.upload(path, @wc_file)
       end
 
       local_instructions_file = "#{$tmp_path}/weak_classdump_instructions.cy"
-      remote_instructions_file = "/var/root/weak_classdump_instructions.cy"
+      @remote_instructions_file = "/var/root/weak_classdump_instructions.cy"
       File.open(local_instructions_file, "w") do |x|
         x.puts("weak_classdump_bundle([NSBundle mainBundle],\"#{@remote_header_dir}\")")
       end
 
-      $device.ops.upload local_instructions_file, remote_instructions_file
+      $device.ops.upload local_instructions_file, @remote_instructions_file
     end
 
     def execute_cycript

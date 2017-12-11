@@ -5,18 +5,21 @@ module Idb
     attr_accessor :load_commands, :shared_libraries, :pie, :arc, :canaries
 
     def initialize(binary)
-      @otool_path = "/usr/bin/otool"
-      unless File.exist? @otool_path.to_s
-        $log.error "otool not available. Some functions will not work properly."
-        error = Qt::MessageBox.new
-        msg = "This feature requires  otool to be installed on the host running idb." \
-              " This is the default on OS X but it may not be available for other platforms."
-        error.setInformativeText(msg)
-        error.setIcon(Qt::MessageBox::Critical)
-        error.exec
-        @otool_path = nil
+      @otool_path = Pathname.new("/usr/bin/otool")
+      if(!@otool_path.exist?)
+        @otool_path = Pathname.new("/usr/local/bin/otool")
+        if(!@otool_path.exist?)
+          $log.error "otool not available. Some functions will not work properly."
+          error = Qt::MessageBox.new
+          msg = "This feature requires  otool to be installed on the host running idb." \
+                " This is the default on OS X but it may not be available for other platforms."
+          error.setInformativeText(msg)
+          error.setIcon(Qt::MessageBox::Critical)
+          error.exec
+          @otool_path = nil
 
-        return
+          return
+        end
       end
 
       @binary = binary
