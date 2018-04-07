@@ -37,4 +37,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'git'
   spec.add_runtime_dependency 'hexdump'
   spec.add_runtime_dependency 'json'
+  spec.add_runtime_dependency 'rbnacl', '>= 3.2', '< 5.0'
+  spec.add_runtime_dependency 'rbnacl-libsodium'
+  spec.add_runtime_dependency 'bcrypt_pbkdf'
 end
