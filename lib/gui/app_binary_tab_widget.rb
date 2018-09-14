@@ -1,6 +1,7 @@
 require_relative 'shared_libraries_widget'
 require_relative 'binary_strings_widget'
 require_relative 'weak_class_dump_widget'
+require_relative 'classdump_dyld_widget'
 
 module Idb
   class AppBinaryTabWidget < Qt::TabWidget
@@ -17,6 +18,9 @@ module Idb
 
       @weak_class_dump = WeakClassDumpWidget.new self
       @tabs[:weak_class_dump] = addTab(@weak_class_dump, "Weak Class Dump")
+
+      @classdump_dyld = ClassdumpDyldWidget.new self
+      @tabs[:classdump_dyld] = addTab(@classdump_dyld, "classdump-dyld")
     end
 
     def clear

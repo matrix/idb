@@ -64,6 +64,12 @@ module Idb
       setFixedHeight(sizeHint().height());
     end
 
+    def mark_classdump_dyld_installed
+      @classdump_dyld_label.text = @classdump_dyld_label.text +  "<br>Found: #{$device.classdump_dyld_path}"
+      @layout.addWidget installed_check_mark, 9, 1
+      setFixedHeight(sizeHint().height());
+    end
+
 
     def apt_get_section
       @aptget_label = Qt::Label.new "<b>apt-get / aptitude</b><br>(Install additional software packages)"
@@ -269,6 +275,30 @@ module Idb
       end
     end
 
+    def classdump_dyld_section
+      @classdump_dyld_label = Qt::Label.new "<b>classdump-dyld</b><br>(Class-dump any Mach-o file without extracting it from dyld_shared_cache. https://github.com/limneos/classdump-dyld )"
+      @layout.addWidget @classdump_dyld_label, 9, 0
+
+      if $device.classdump_dyld_installed?
+        mark_classdump_dyld_installed
+      else
+        @install_classdump_dyld = Qt::PushButton.new "Install"
+        @install_classdump_dyld.connect(SIGNAL(:released)) {
+          $device.install_classdump_dyld
+          if $device.classdump_dyld_installed?
+            @install_classdump_dyld.hide
+            mark_classdump_dyld_installed
+          else
+            error = Qt::MessageBox.new
+            error.setInformativeText("classdump-dyld could not be installed. Please make sure Cydia has finished all tasks and is closed on the device.")
+            error.setIcon(Qt::MessageBox::Critical)
+            error.exec
+          end
+        }
+        @layout.addWidget @install_classdump_dyld, 9, 1
+      end
+    end
+
     def initialize *args
       super *args
       @layout = Qt::GridLayout.new
@@ -291,7 +321,7 @@ module Idb
       keychaineditor_section
       rsync_section
       cycript_section
-
+      classdump_dyld_section
 
       setFixedHeight(sizeHint().height());
     end

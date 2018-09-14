@@ -32,6 +32,7 @@ module Idb
       @device_app_paths[:pbwatcher] = ["/var/root/pbwatcher"]
       @device_app_paths[:dumpdecrypted_armv7] = ["/usr/lib/dumpdecrypted_armv7.dylib"]
       @device_app_paths[:dumpdecrypted_armv6] = ["/usr/lib/dumpdecrypted_armv6.dylib"]
+      @device_app_paths[:classdump_dyld] = ["/usr/bin/classdump-dyld"]
 
       if $settings['device_connection_mode'] == "ssh"
         $log.debug "Connecting via SSH"
@@ -266,6 +267,10 @@ module Idb
       install_from_cydia "cycript"
     end
 
+    def install_classdump_dyld
+      install_from_cydia "net.limneos.classdump-dyld"
+    end
+
     def close
       $log.info "Terminating port forwarding helper..."
       Process.kill("INT", @port_forward_pid)
@@ -306,7 +311,12 @@ module Idb
         pcviewer_installed? &&
         keychain_editor_installed? &&
         rsync_installed? &&
-        cycript_installed?
+        cycript_installed? &&
+	classdump_dyld_installed?
+    end
+
+    def classdump_dyld_installed?
+      is_installed? :classdump_dyld
     end
 
     def cycript_installed?
@@ -383,6 +393,10 @@ module Idb
 
     def cycript_path
       path_for :cycript
+    end
+
+    def classdump_dyld_path
+      path_for :classdump_dyld
     end
   end
 end
